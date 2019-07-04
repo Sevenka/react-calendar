@@ -4,6 +4,10 @@
   justify-content: space-between;
   padding: 1rem 0;
 }
+.switch {
+  margin-left: 2rem;
+  margin-right: auto;
+}
 .weekdays {
   display: flex;
 }

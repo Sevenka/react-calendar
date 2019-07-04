@@ -2,8 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   initCalendar,
-  moveMonthForward,
-  moveMonthBackward
+  moveTo
 } from '../actions';
 
 class Calendar extends React.Component {
@@ -23,6 +22,10 @@ class Calendar extends React.Component {
     }
   }
 
+  onMoveTo(direction) {
+    this.props.moveTo(direction);
+  }
+
   componentDidMount() {
     this.props.initCalendar();
   }
@@ -36,20 +39,24 @@ class Calendar extends React.Component {
           <h1>Calendar</h1>
         </header>
         <nav className="controls">
-          <button className="btn btn-primary">Today</button>
-          <div className="swith">
+          <button
+            className="btn btn-primary"
+            onClick={() => this.onMoveTo('today')}>
+            Today
+          </button>
+          <div className="switch">
             <button
               className="btn btn-light previous"
-              onClick={this.props.moveMonthBackward}>
+              onClick={() => this.onMoveTo('backward')}>
               <span aria-hidden="true">&lsaquo;</span>
             </button>
             <button
               className="btn btn-light next"
-              onClick={this.props.moveMonthForward}>
+              onClick={() => this.onMoveTo('forward')}>
               <span aria-hidden="true">&rsaquo;</span>
             </button>
           </div>
-          <h3>{currentMonthName} {this.props.currentDatePoint && this.props.currentDatePoint.getFullYear()}</h3>
+          <h3 className="mr-auto">{currentMonthName} {this.props.currentDatePoint && this.props.currentDatePoint.getFullYear()}</h3>
           <button className="btn btn-light">Month</button>
         </nav>
         <main>
@@ -77,8 +84,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   initCalendar,
-  moveMonthForward,
-  moveMonthBackward
+  moveTo
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar);

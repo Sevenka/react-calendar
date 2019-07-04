@@ -25,16 +25,9 @@ export function initCalendar() {
   }
 }
 
-export function moveMonthForward() {
+export function moveTo(direction) {
   return dispatch => {
-    dispatch(setCurrentDatePoint('forward'));
-    dispatch(setCurrentView());
-  }
-}
-
-export function moveMonthBackward() {
-  return dispatch => {
-    dispatch(setCurrentDatePoint('backward'));
+    dispatch(setCurrentDatePoint(direction));
     dispatch(setCurrentView());
   }
 }

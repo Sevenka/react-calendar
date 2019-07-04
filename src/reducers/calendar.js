@@ -26,7 +26,7 @@ function onSetToday(state) {
 }
 
 function onSetCurrentDatePoint(state, action) {
-  let currentDatePoint = state.currentDatePoint || new Date();
+  let currentDatePoint = state.currentDatePoint || new Date(state.today.getTime());
   if (action.payload.direction) {
     currentDatePoint.setDate(1);
     switch (action.payload.direction) {
@@ -35,6 +35,9 @@ function onSetCurrentDatePoint(state, action) {
         break;
       case 'backward':
         currentDatePoint.setMonth(currentDatePoint.getMonth() - 1);
+        break;
+      case 'today':
+        currentDatePoint = new Date(state.today.getTime());
         break;
       default:
         break;
