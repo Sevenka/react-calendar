@@ -1,12 +1,18 @@
-import { SET_TODAY, SET_CURRENT_VIEW } from '../actions/types';
+import {
+  SET_TODAY,
+  SET_CURRENT_DATE_POINT,
+  SET_CURRENT_VIEW
+} from '../actions/types';
 
 const initialState = {
   today: null,
+  currentDatePoint: null,
   currentView: []
 };
 
 const stateFactory = {
   [SET_TODAY]: onSetToday,
+  [SET_CURRENT_DATE_POINT]: onSetCurrentDatePoint,
   [SET_CURRENT_VIEW]: onSetCurrentView
 };
 
@@ -19,10 +25,31 @@ function onSetToday(state) {
   }
 }
 
+function onSetCurrentDatePoint(state, action) {
+  let currentDatePoint = state.currentDatePoint || new Date();
+  if (action.payload.direction) {
+    currentDatePoint.setDate(1);
+    switch (action.payload.direction) {
+      case 'forward':
+        currentDatePoint.setMonth(currentDatePoint.getMonth() + 1);
+        break;
+      case 'backward':
+        currentDatePoint.setMonth(currentDatePoint.getMonth() - 1);
+        break;
+      default:
+        break;
+    }
+  }
+  return {
+    ...state,
+    currentDatePoint
+  }
+}
+
 function onSetCurrentView(state) {
   let currentView = [];
-  let firstDayOfMonth = new Date(state.today.getFullYear(), state.today.getMonth(), 1);
-  let lastDayOfMonth = new Date(state.today.getFullYear(), state.today.getMonth() + 1, 0);
+  let firstDayOfMonth = new Date(state.currentDatePoint.getFullYear(), state.currentDatePoint.getMonth(), 1);
+  let lastDayOfMonth = new Date(state.currentDatePoint.getFullYear(), state.currentDatePoint.getMonth() + 1, 0);
 
   for (let day = firstDayOfMonth; day <= lastDayOfMonth; day.setDate(day.getDate() + 1)) {
     currentView.push(new Date(day));

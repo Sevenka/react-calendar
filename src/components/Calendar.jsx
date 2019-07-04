@@ -1,6 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { initCalendar } from '../actions';
+import {
+  initCalendar,
+  moveMonthForward,
+  moveMonthBackward
+} from '../actions';
 
 class Calendar extends React.Component {
   constructor(props) {
@@ -24,6 +28,8 @@ class Calendar extends React.Component {
   }
 
   render() {
+    const currentMonthName = new Intl.DateTimeFormat('en-US', { month: 'long'}).format(this.props.currentDatePoint);
+
     return (
       <div className="container">
         <header>
@@ -32,14 +38,18 @@ class Calendar extends React.Component {
         <nav className="controls">
           <button className="btn btn-primary">Today</button>
           <div className="swith">
-            <button className="btn btn-light previous">
+            <button
+              className="btn btn-light previous"
+              onClick={this.props.moveMonthBackward}>
               <span aria-hidden="true">&lsaquo;</span>
             </button>
-            <button className="btn btn-light next">
+            <button
+              className="btn btn-light next"
+              onClick={this.props.moveMonthForward}>
               <span aria-hidden="true">&rsaquo;</span>
             </button>
           </div>
-          <h3>July 2019</h3>
+          <h3>{currentMonthName} {this.props.currentDatePoint && this.props.currentDatePoint.getFullYear()}</h3>
           <button className="btn btn-light">Month</button>
         </nav>
         <main>
@@ -61,11 +71,14 @@ class Calendar extends React.Component {
 
 const mapStateToProps = state => ({
   today: state.calendar.today,
+  currentDatePoint: state.calendar.currentDatePoint,
   currentView: state.calendar.currentView
 });
 
 const mapDispatchToProps = {
-  initCalendar
+  initCalendar,
+  moveMonthForward,
+  moveMonthBackward
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar);
