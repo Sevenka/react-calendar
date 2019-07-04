@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { initCalendar } from '../actions';
 
 class Calendar extends React.Component {
   constructor(props) {
@@ -6,15 +8,19 @@ class Calendar extends React.Component {
 
     this.state = {
       weekdays: [
+        'Sun',
         'Mon',
         'Tue',
         'Wed',
         'Thu',
         'Fri',
-        'Sat',
-        'Sun'
+        'Sat'
       ]
     }
+  }
+
+  componentDidMount() {
+    this.props.initCalendar();
   }
 
   render() {
@@ -36,9 +42,16 @@ class Calendar extends React.Component {
           <h3>July 2019</h3>
           <button className="btn btn-light">Month</button>
         </nav>
-        <main className="border">
+        <main>
           <div className="weekdays">
             {this.state.weekdays.map(day => <span key={day} className="name">{day}</span>)}
+          </div>
+          <div className="days">
+            {this.props.currentView.map(day => {
+              return <div className="day" key={day.getTime()}>
+                  <span className={`badge ${day.getTime() === this.props.today.getTime() ? 'badge-primary' : 'badge-light'}`}>{day.getDate()}</span>
+                </div>
+            })}
           </div>
         </main>
       </div>
@@ -46,4 +59,13 @@ class Calendar extends React.Component {
   }
 }
 
-export default Calendar;
+const mapStateToProps = state => ({
+  today: state.calendar.today,
+  currentView: state.calendar.currentView
+});
+
+const mapDispatchToProps = {
+  initCalendar
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Calendar);
