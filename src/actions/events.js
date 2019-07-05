@@ -84,11 +84,41 @@ function handleErrors(response) {
   return response;
 }
 
-export function getEvents() {
+export function getEvents(filterType) {
   return (dispatch, getState) => {
     dispatch(getEventsBegin());
-    let filter = {
-      month: getState().calendar.currentDatePoint.getMonth() + 1
+    let filter = {};
+    filter.year = getState().calendar.currentDatePoint.getFullYear();
+    switch (filterType) {
+      case 'month':
+        filter.month = getState().calendar.currentDatePoint.getMonth() + 1;
+        break;
+      case 'week':
+        let firstWeekDay, lastWeekDay;
+        const currentPointWeekDay = getState().calendar.currentDatePoint.getDay();
+        firstWeekDay = new Date(getState().calendar.currentDatePoint);
+        lastWeekDay = new Date(getState().calendar.currentDatePoint);
+        firstWeekDay.setDate(firstWeekDay.getDate() - currentPointWeekDay);
+        lastWeekDay.setDate(lastWeekDay.getDate() + (6 - currentPointWeekDay));
+        
+        const firstWeekDayMonth = firstWeekDay.getMonth();
+        const lastWeekDayMonth = lastWeekDay.getMonth();
+        const firstWeekDayDate = firstWeekDay.getDate();
+        const lastWeekDayDate = lastWeekDay.getDate();
+
+        if (firstWeekDayMonth === lastWeekDayMonth) {
+          filter.month = firstWeekDayMonth + 1;
+        } else {
+          filter.month = { $in: [firstWeekDayMonth + 1, lastWeekDayMonth + 1] };
+        }
+
+        filter.$or = [
+          { day: { $gte: firstWeekDayDate } },
+          { day: { $lte: lastWeekDayDate } }
+        ];
+        break;
+      default:
+        break;
     }
     return fetch(`${apiPath}/get`, {
       method: 'POST',

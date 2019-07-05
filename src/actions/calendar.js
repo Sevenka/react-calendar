@@ -1,7 +1,8 @@
 import {
   SET_TODAY,
   SET_CURRENT_DATE_POINT,
-  SET_CURRENT_VIEW
+  SET_CURRENT_VIEW,
+  SET_CALENDAR_MODE
 } from './types';
 
 export const setToday = () => ({
@@ -15,6 +16,11 @@ export const setCurrentDatePoint = (direction) => ({
 
 export const setCurrentView = () => ({
   type: SET_CURRENT_VIEW
+});
+
+export const setCalendarMode = (mode) => ({
+  type: SET_CALENDAR_MODE,
+  payload: { mode }
 });
 
 export function initCalendar() {

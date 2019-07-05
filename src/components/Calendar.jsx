@@ -3,6 +3,7 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import {
   initCalendar,
+  setCalendarMode,
   moveTo,
   getEvents,
   setEditedEvent,
@@ -33,7 +34,7 @@ class Calendar extends React.Component {
   }
 
   onGetEvents() {
-    this.props.getEvents()
+    this.props.getEvents(this.state.mode)
       .then(() => {
         let currentViewWithEvents = this.props.currentView.map(day => {
           let eventsByDay = this.props.events.filter(item => day.date.getDate() === item.day);
@@ -55,7 +56,9 @@ class Calendar extends React.Component {
     });
   }
 
-  goEditEvent(eventItem) {
+  goEditEvent(e, eventItem) {
+    if (e.target.type === 'button')
+      return;
     this.props.setEditedEvent(eventItem);
     this.props.history.push('/edit');
   }
@@ -69,9 +72,21 @@ class Calendar extends React.Component {
       })
   }
 
-  componentDidMount() {
+  onInitCalendar() {
     this.props.initCalendar();
     this.onGetEvents();
+  }
+
+  onSetMode(mode) {
+    if (mode === this.props.mode)
+      return;
+
+    this.props.setCalendarMode(mode);
+    this.onInitCalendar();
+  }
+
+  componentDidMount() {
+    this.onInitCalendar();
   }
 
   render() {
@@ -101,7 +116,18 @@ class Calendar extends React.Component {
             </button>
           </div>
           <h3 className="mr-auto">{currentMonthName} {this.props.currentDatePoint && this.props.currentDatePoint.getFullYear()}</h3>
-          <button className="btn btn-light">Month</button>
+          <div className="btn-group">
+            <button
+              className={`btn ${this.props.mode === 'month' ? 'btn-primary' : 'btn-light'}`}
+              onClick={() => this.onSetMode('month')}>
+              Month
+            </button>
+            <button
+              className={`btn ${this.props.mode === 'week' ? 'btn-primary' : 'btn-light'}`}
+              onClick={() => this.onSetMode('week')}>
+              Week
+            </button>
+          </div>
         </nav>
         <main>
           <div className="weekdays">
@@ -118,7 +144,7 @@ class Calendar extends React.Component {
                     return <div
                       key={item._id}
                       className="badge badge-info mt-1 d-flex align-items-center"
-                      onClick={() => this.goEditEvent(item)}>
+                      onClick={(e) => this.goEditEvent(e, item)}>
                       <span>{item.name}</span>
                       <button
                         className="btn btn-sm btn-danger ml-auto"
@@ -141,11 +167,13 @@ const mapStateToProps = state => ({
   today: state.calendar.today,
   currentDatePoint: state.calendar.currentDatePoint,
   currentView: state.calendar.currentView,
+  mode: state.calendar.mode,
   events: state.events.items
 });
 
 const mapDispatchToProps = {
   initCalendar,
+  setCalendarMode,
   moveTo,
   getEvents,
   setEditedEvent,
