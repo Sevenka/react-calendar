@@ -17,7 +17,7 @@
   font-weight: bold;
 }
 .days,
-.days .day {
+.day {
   border-style: solid;
   border-color: rgba(0,0,0,.3);
 }
@@ -26,10 +26,13 @@
   flex-wrap: wrap;
   border-width: 1px 0 0 1px;
 }
-.days .day {
+.day {
   display: flex;
   flex-direction: column;
   width: 14.28%;
   min-height: 150px;
   border-width: 0 1px 1px 0;
+}
+.day:hover {
+  cursor: pointer;
 }

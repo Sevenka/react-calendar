@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import {
   initCalendar,
@@ -41,6 +42,15 @@ class Calendar extends React.Component {
           }
         });
         this.setState({ currentViewWithEvents });
+    });
+  }
+
+  goToCreateEvent(e, date) {
+    if (e.target !== e.currentTarget)
+      return;
+    this.props.history.push({
+      pathname: '/new',
+      state: { date }
     });
   }
 
@@ -93,7 +103,10 @@ class Calendar extends React.Component {
           </div>
           <div className="days">
             {this.state.currentViewWithEvents.map((day, dayIndex) => {
-              return <div className="day" key={day.date.getTime()}>
+              return <div
+                  className="day"
+                  key={day.date.getTime()}
+                  onClick={(e) => this.goToCreateEvent(e, day.date)}>
                   <span className={`badge ${day.date.getTime() === this.props.today.getTime() ? 'badge-primary' : 'badge-light'}`}>{day.date.getDate()}</span>
                   {day.events.map((item, eventIndex) => {
                     return <div key={item._id} className="badge badge-info mt-1 d-flex align-items-center">
@@ -129,4 +142,4 @@ const mapDispatchToProps = {
   deleteEvent
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Calendar);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Calendar));
