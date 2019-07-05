@@ -2,7 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {
   initCalendar,
-  moveTo
+  moveTo,
+  getEvents
 } from '../actions';
 
 class Calendar extends React.Component {
@@ -18,16 +19,33 @@ class Calendar extends React.Component {
         'Thu',
         'Fri',
         'Sat'
-      ]
+      ],
+      currentViewWithEvents: []
     }
   }
 
   onMoveTo(direction) {
     this.props.moveTo(direction);
+    this.onGetEvents();
+  }
+
+  onGetEvents() {
+    this.props.getEvents()
+      .then(() => {
+        let currentViewWithEvents = this.props.currentView.map(day => {
+          let eventsByDay = this.props.events.filter(item => day.date.getDate() === item.day);
+          return {
+            ...day,
+            events: eventsByDay.slice()
+          }
+        });
+        this.setState({ currentViewWithEvents });
+    });
   }
 
   componentDidMount() {
     this.props.initCalendar();
+    this.onGetEvents();
   }
 
   render() {
@@ -64,9 +82,12 @@ class Calendar extends React.Component {
             {this.state.weekdays.map(day => <span key={day} className="name">{day}</span>)}
           </div>
           <div className="days">
-            {this.props.currentView.map(day => {
-              return <div className="day" key={day.getTime()}>
-                  <span className={`badge ${day.getTime() === this.props.today.getTime() ? 'badge-primary' : 'badge-light'}`}>{day.getDate()}</span>
+            {this.state.currentViewWithEvents.map(day => {
+              return <div className="day" key={day.date.getTime()}>
+                  <span className={`badge ${day.date.getTime() === this.props.today.getTime() ? 'badge-primary' : 'badge-light'}`}>{day.date.getDate()}</span>
+                  {day.events.map(item => {
+                    return <span key={item._id} className="badge badge-success mt-1">{item.name}</span>
+                  })}
                 </div>
             })}
           </div>
@@ -79,12 +100,14 @@ class Calendar extends React.Component {
 const mapStateToProps = state => ({
   today: state.calendar.today,
   currentDatePoint: state.calendar.currentDatePoint,
-  currentView: state.calendar.currentView
+  currentView: state.calendar.currentView,
+  events: state.events.items
 });
 
 const mapDispatchToProps = {
   initCalendar,
-  moveTo
+  moveTo,
+  getEvents
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar);

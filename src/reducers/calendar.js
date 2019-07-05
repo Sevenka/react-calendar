@@ -55,18 +55,18 @@ function onSetCurrentView(state) {
   let lastDayOfMonth = new Date(state.currentDatePoint.getFullYear(), state.currentDatePoint.getMonth() + 1, 0);
 
   for (let day = firstDayOfMonth; day <= lastDayOfMonth; day.setDate(day.getDate() + 1)) {
-    currentView.push(new Date(day));
+    currentView.push({ date: new Date(day) });
   }
 
-  let firstDayWeekDay = currentView[0].getDay();
-  let lastDayWeekDay = currentView[currentView.length - 1].getDay();
+  let firstDayWeekDay = currentView[0].date.getDay();
+  let lastDayWeekDay = currentView[currentView.length - 1].date.getDay();
 
   if (firstDayWeekDay !== 0) {
     let day = firstDayOfMonth;
     day.setMonth(firstDayOfMonth.getMonth() - 1);
     day.setDate(0);
     while (firstDayWeekDay !== 0) {
-      currentView.unshift(new Date(day));
+      currentView.unshift({ date: new Date(day) });
       day.setDate(day.getDate() - 1);
       firstDayWeekDay--;
     }
@@ -75,7 +75,7 @@ function onSetCurrentView(state) {
   if (lastDayWeekDay !== 6) {
     for (let day = lastDayOfMonth; lastDayWeekDay !== 6; lastDayWeekDay++) {
       day.setDate(day.getDate() + 1)
-      currentView.push(new Date(day));
+      currentView.push({ date: new Date(day) });
     }
   }
 
