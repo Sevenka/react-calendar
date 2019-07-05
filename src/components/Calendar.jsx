@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import {
   initCalendar,
   moveTo,
-  getEvents
+  getEvents,
+  deleteEvent
 } from '../actions';
 
 class Calendar extends React.Component {
@@ -41,6 +42,15 @@ class Calendar extends React.Component {
         });
         this.setState({ currentViewWithEvents });
     });
+  }
+
+  onDeleteEvent(id, eventIndex, dayIndex) {
+    this.props.deleteEvent(id)
+      .then(() => {
+        let currentViewWithEvents = this.state.currentViewWithEvents.slice();
+        currentViewWithEvents[dayIndex].events.splice(eventIndex, 1);
+        this.setState({ currentViewWithEvents });
+      })
   }
 
   componentDidMount() {
@@ -82,11 +92,19 @@ class Calendar extends React.Component {
             {this.state.weekdays.map(day => <span key={day} className="name">{day}</span>)}
           </div>
           <div className="days">
-            {this.state.currentViewWithEvents.map(day => {
+            {this.state.currentViewWithEvents.map((day, dayIndex) => {
               return <div className="day" key={day.date.getTime()}>
                   <span className={`badge ${day.date.getTime() === this.props.today.getTime() ? 'badge-primary' : 'badge-light'}`}>{day.date.getDate()}</span>
-                  {day.events.map(item => {
-                    return <span key={item._id} className="badge badge-success mt-1">{item.name}</span>
+                  {day.events.map((item, eventIndex) => {
+                    return <div key={item._id} className="badge badge-info mt-1 d-flex align-items-center">
+                      <span>{item.name}</span>
+                      <button
+                        className="btn btn-sm btn-danger ml-auto"
+                        type="button"
+                        onClick={() => this.onDeleteEvent(item._id, eventIndex, dayIndex)}>
+                        X
+                      </button>
+                    </div>
                   })}
                 </div>
             })}
@@ -107,7 +125,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   initCalendar,
   moveTo,
-  getEvents
+  getEvents,
+  deleteEvent
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Calendar);

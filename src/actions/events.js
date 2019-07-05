@@ -1,7 +1,10 @@
 import {
   GET_EVENTS_BEGIN,
   GET_EVENTS_SUCCESS,
-  GET_EVENTS_FAILURE
+  GET_EVENTS_FAILURE,
+  DELETE_EVENT_BEGIN,
+  DELETE_EVENT_SUCCESS,
+  DELETE_EVENT_FAILURE
 } from '../actions/types';
 
 export const getEventsBegin = () => ({
@@ -15,6 +18,20 @@ export const getEventsSuccess = events => ({
 
 export const getEventsFailure = error => ({
   type: GET_EVENTS_FAILURE,
+  payload: { error }
+});
+
+export const deleteEventBegin = () => ({
+  type: DELETE_EVENT_BEGIN
+});
+
+export const deleteEventSuccess = id => ({
+  type: DELETE_EVENT_SUCCESS,
+  payload: { id }
+});
+
+export const deleteEventFailure = error => ({
+  type: DELETE_EVENT_FAILURE,
   payload: { error }
 });
 
@@ -47,5 +64,18 @@ export function getEvents() {
         return json.items;
       })
       .catch(error => dispatch(getEventsFailure(error)));
+  }
+}
+
+export function deleteEvent(id) {
+  return dispatch => {
+    dispatch(deleteEventBegin());
+    return fetch(`${apiPath}/delete/${id}`)
+      .then(handleErrors)
+      .then(() => {
+        dispatch(deleteEventSuccess());
+        return;
+      })
+      .catch(error => dispatch(deleteEventFailure(error)));
   }
 }
