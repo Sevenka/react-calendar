@@ -5,6 +5,7 @@ import {
   initCalendar,
   moveTo,
   getEvents,
+  setEditedEvent,
   deleteEvent
 } from '../actions';
 
@@ -52,6 +53,11 @@ class Calendar extends React.Component {
       pathname: '/new',
       state: { date }
     });
+  }
+
+  goEditEvent(eventItem) {
+    this.props.setEditedEvent(eventItem);
+    this.props.history.push('/edit');
   }
 
   onDeleteEvent(id, eventIndex, dayIndex) {
@@ -109,7 +115,10 @@ class Calendar extends React.Component {
                   onClick={(e) => this.goToCreateEvent(e, day.date)}>
                   <span className={`badge ${day.date.getTime() === this.props.today.getTime() ? 'badge-primary' : 'badge-light'}`}>{day.date.getDate()}</span>
                   {day.events.map((item, eventIndex) => {
-                    return <div key={item._id} className="badge badge-info mt-1 d-flex align-items-center">
+                    return <div
+                      key={item._id}
+                      className="badge badge-info mt-1 d-flex align-items-center"
+                      onClick={() => this.goEditEvent(item)}>
                       <span>{item.name}</span>
                       <button
                         className="btn btn-sm btn-danger ml-auto"
@@ -139,6 +148,7 @@ const mapDispatchToProps = {
   initCalendar,
   moveTo,
   getEvents,
+  setEditedEvent,
   deleteEvent
 };
 

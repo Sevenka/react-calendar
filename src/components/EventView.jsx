@@ -11,7 +11,7 @@ import {
 class EventView extends React.Component {
   constructor(props) {
     super(props);
-    const createEventDate = this.props.location.state.date ? this.props.location.state.date : '';
+    const createEventDate = this.props.location.state ? this.props.location.state.date : '';
     const editedEventDate = props.editedEvent && {
       year: props.editedEvent.year,
       month: props.editedEvent.month,
@@ -37,7 +37,7 @@ class EventView extends React.Component {
     } else {
       year = date.year;
       month = date.month;
-      day = date.date;
+      day = date.day;
     }
 
     if (month < 10) {
