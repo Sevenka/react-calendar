@@ -106,6 +106,7 @@ function onSetCurrentView(state, action) {
       for (let day = firstWeekDay; day <= lastWeekDay; day.setDate(day.getDate() + 1)) {
         currentView.push({ date: new Date(day) });
       }
+      break;
     default:
       break;
   }
